@@ -1,0 +1,131 @@
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Arial', sans-serif;
+}
+
+body {
+    background-color: #000; /* Black background */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    position: relative;
+    overflow: hidden;
+}
+
+
+#particles-js {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: -1;
+}
+
+
+.container {
+    background: rgba(0, 0, 0, 0.8); /* Semi-transparent black */
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
+    padding: 40px;
+    border-radius: 10px;
+    max-width: 500px;
+    width: 100%;
+    text-align: center;
+    z-index: 10;
+}
+
+h1 {
+    font-size: 28px;
+    margin-bottom: 20px;
+    color: #fff;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+p {
+    color: #fff;
+}
+
+.jncok {
+    color: red;
+}
+
+
+.form-group {
+    margin-bottom: 20px;
+    text-align: left;
+}
+
+label {
+    display: block;
+    margin-bottom: 8px;
+    font-size: 16px;
+    color: #fff;
+}
+
+input[type="file"],
+input[type="password"] {
+    width: 100%;
+    padding: 12px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    font-size: 16px;
+    background-color: #333;
+    color: #fff;
+    transition: all 0.3s ease;
+}
+
+input[type="file"]:hover,
+input[type="password"]:hover {
+    border-color: #6a5acd;
+}
+
+input[type="password"]::placeholder {
+    color: #888;
+}
+
+/* Button styling */
+.action-btn {
+    padding: 12px 30px;
+    font-size: 16px;
+    background-color: #6a5acd;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.3s ease;
+    margin: 10px;
+}
+
+.action-btn:hover {
+    background-color: #4e3e8e;
+    transform: scale(1.05);
+}
+
+#output {
+    margin-top: 20px;
+    font-size: 16px;
+    color: #fff;
+    padding: 10px;
+    background-color: #333;
+    border-radius: 5px;
+    display: none;
+}
+
+/* Animations */
+@keyframes fadeIn {
+    0% {
+        opacity: 0;
+    }
+    100% {
+        opacity: 1;
+    }
+}
+
+#output {
+    animation: fadeIn 1s ease-out;
+}

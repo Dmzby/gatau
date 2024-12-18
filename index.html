@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+
+    <!-- leoxsec 
+    github : dimasbp-dev -->
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>File Encryption Tool</title>
+    <link rel="stylesheet" href="semvak.css">
+    <style>
+        footer {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            background-color: #333;
+            color: white;
+            text-align: center;
+            padding: 10px;
+        }
+
+        #loading {
+            display: none;
+            color: white;
+            font-size: 18px;
+            font-weight: bold;
+            text-align: center;
+            margin-top: 20px;
+        }
+
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group select, .form-group input {
+            width: 100%; 
+            padding: 10px;
+            font-size: 16px;
+            box-sizing: border-box;
+        }
+
+        .password-group {
+            display: none; 
+        }
+    </style>
+</head>
+<body>
+    <!-- partikel -->
+    <div id="particles-js"></div>
+
+    <!-- konten -->
+    <div class="container">
+        <h1>File Encryption Tool</h1>
+        <p>Alat ini mendukung enkripsi file menggunakan SHA-256 (hash), AES (dengan password), Base64 (encoding), dan RC4 (dengan password). Pilih metode yang sesuai untuk kebutuhan enkripsi Anda.</p>
+        <br>
+        <details>
+            <summary class="jncok">Penting!</summary>
+            <p class="jncok">
+                [ ! ] Alat ini hanya mendukung file teks dari berbagai bahasa pemrograman seperti .ruby, .C++, .py, dll. 
+                File biner seperti .exe atau .dll tidak dapat dienkripsi tanpa penyesuaian khusus. [ ! ]
+            </p>
+        </details>
+        <br>
+        <div class="form-group">
+            <label for="fileInput">Pilih file:</label>
+            <input type="file" id="fileInput" accept=".txt,.java,.css,.cpp,.cs,.py,.php,.js">
+        </div>
+        
+        <div class="form-group">
+            <label for="encryptionMethod">Pilih metode enkripsi:</label>
+            <select id="encryptionMethod">
+                <option value="SHA256">SHA-256</option>
+                <option value="AES">AES</option>
+                <option value="Base64">Base64</option>
+                <option value="RC4">RC4</option>
+            </select>
+        </div>
+        
+        <div class="form-group password-group" id="passwordGroup">
+            <label for="passwordInput">Masukkan password (untuk AES/RC4):</label>
+            <input type="password" id="passwordInput">
+        </div>
+        
+        <div class="form-group">
+            <button id="encryptBtn">Enkripsi</button>
+        </div>
+        
+        <div id="output"></div>
+        <div id="loading">Memproses... Mohon tunggu...</div>
+    </div>
+
+   
+    <footer>
+        <p>&copy; <span id="year"></span> LeoxSec. All rights reserved.</p>
+    </footer>
+
+    <!-- Librari -->
+    <script src="https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/3.1.9-1/crypto-js.min.js"></script>
+
+
+    <script>
+
+        document.getElementById("year").textContent = new Date().getFullYear();
+
+
+        particlesJS('particles-js', {
+            particles: { number: { value: 100, density: { enable: true, value_area: 800 } }, shape: { type: 'circle' }, opacity: { value: 0.5 }, size: { value: 3 }, line_linked: { enable: true }, move: { enable: true, speed: 3 } }
+        });
+
+ 
+        function togglePasswordField() {
+            const selectedMethod = document.getElementById('encryptionMethod').value;
+            const passwordGroup = document.getElementById('passwordGroup');
+            
+            if (selectedMethod === 'AES' || selectedMethod === 'RC4') {
+                passwordGroup.style.display = 'block';
+            } else {
+                passwordGroup.style.display = 'none';
+            }
+        }
+
+
+        document.getElementById('encryptionMethod').addEventListener('change', togglePasswordField);
+
+        document.getElementById('encryptBtn').addEventListener('click', function () {
+            const fileInput = document.getElementById('fileInput');
+            const passwordInput = document.getElementById('passwordInput');
+            const encryptionMethod = document.getElementById('encryptionMethod').value;
+            const outputDiv = document.getElementById('output');
+            const loadingDiv = document.getElementById('loading');
+
+            if (!fileInput.files.length) {
+                outputDiv.innerHTML = 'Silakan pilih file.';
+                return;
+            }
+
+            const file = fileInput.files[0];
+            const reader = new FileReader();
+
+            reader.onload = function (e) {
+                const fileContent = e.target.result;
+                let encryptedContent = '';
+
+                try {
+                    if (encryptionMethod === 'SHA256') {
+                        encryptedContent = CryptoJS.SHA256(fileContent).toString();
+                    } else if (encryptionMethod === 'AES') {
+                        if (!passwordInput.value) throw 'Password diperlukan untuk AES!';
+                        encryptedContent = CryptoJS.AES.encrypt(fileContent, passwordInput.value).toString();
+                    } else if (encryptionMethod === 'Base64') {
+                        encryptedContent = CryptoJS.enc.Base64.stringify(CryptoJS.enc.Utf8.parse(fileContent));
+                    } else if (encryptionMethod === 'RC4') {
+                        if (!passwordInput.value) throw 'Password diperlukan untuk RC4!';
+                        encryptedContent = CryptoJS.RC4.encrypt(fileContent, passwordInput.value).toString();
+                    } else {
+                        throw 'Metode enkripsi tidak valid!';
+                    }
+
+                    const encryptedBlob = new Blob([encryptedContent], { type: 'text/plain' });
+                    const downloadLink = document.createElement('a');
+                    const newFileName = file.name.replace(/(\.[\w\d_-]+)$/i, `_${encryptionMethod.toLowerCase()}$1`);
+                    downloadLink.href = URL.createObjectURL(encryptedBlob);
+                    downloadLink.download = newFileName;
+                    downloadLink.click();
+
+                    outputDiv.innerHTML = `File berhasil dienkripsi dengan metode ${encryptionMethod}.`;
+                } catch (error) {
+                    outputDiv.innerHTML = `Error: ${error}`;
+                } finally {
+                    loadingDiv.style.display = 'none';
+                }
+            };
+
+            loadingDiv.style.display = 'block';
+            outputDiv.innerHTML = '';
+            reader.readAsText(file);
+        });
+
+        // penting!
+        togglePasswordField();
+    </script>
+</body>
+</html>
